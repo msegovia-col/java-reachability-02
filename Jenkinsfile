@@ -35,8 +35,7 @@ pipeline {
               [scanPattern: '**/target/*.zip']
             ],
             reachability: [
-                        javaAnalysis: [enable: true,
-              ]  
+                        javaAnalysis: [enable: true],  
             ]
           )
 
