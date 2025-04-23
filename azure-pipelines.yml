@@ -10,22 +10,21 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  MAVEN_OPTS: "-Xmx3072m"
+  mavenVersion: '3.9'
+  javaVersion: '17'
+  buildConfiguration: 'Release'
 
 steps:
-- task: UseJavaVersion@1
+- task: UseJava@1
   inputs:
     versionSpec: '17'
     jdkArchitecture: 'x64'
-
-steps:
-- script: java -version
-  displayName: 'Check Java version'
-    
-- task: Maven@4
+ 
+- task: Maven@3
   inputs:
     mavenVersionOption: 'Default'
-    mavenPomFile: 'pom.xml'
+    mavenSetM2Home: true 
+    options: '-B -V -e -U'
     goals: 'clean package -Pdist -Pindex'
     
 - task: NexusIqPipelineTask@2
@@ -34,7 +33,7 @@ steps:
     applicationId: 'maria-test-app'
     stage: 'Build'
     scanTargets: '**/*.jar, **/*.zip'
-    enableCallflow: true
+    enableCallflow: true 
     callflowNamespaces: 'org.sonatype.lifecycle.jenkins.examples.callflow'
 
 - task: PublishBuildArtifacts@1
