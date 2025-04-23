@@ -4,29 +4,26 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- main
+- main  # or 'master' if that’s your default branch
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-22.04
 
 variables:
-  mavenVersion: '3.9'
-  javaVersion: '17'
-  buildConfiguration: 'Release'
+  MAVEN_OPTS: "-Xmx3072m"
 
 steps:
-- task: UseJava@1
-  inputs:
-    versionSpec: '17'
-    jdkArchitecture: 'x64'
- 
-- task: Maven@3
+- script: |
+    echo "Java version:"
+    java -version
+  displayName: 'Check Java version'
+
+- task: Maven@4
   inputs:
     mavenVersionOption: 'Default'
-    mavenSetM2Home: true 
-    options: '-B -V -e -U'
+    mavenPomFile: 'pom.xml'
     goals: 'clean package -Pdist -Pindex'
-    
+
 - task: NexusIqPipelineTask@2
   inputs:
     nexusIqService: 'int-test.sonatype.app'
@@ -40,3 +37,4 @@ steps:
   inputs:
     artifactName: 'bomxray.log'
     targetPath: '**/bomxray.log'
+
